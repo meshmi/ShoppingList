@@ -13,9 +13,3 @@ protocol Setup {
     func setup()
     func setupAppearance()
 }
-
-extension Setup {
-    static var id : String {
-        return String(self)
-    }
-}

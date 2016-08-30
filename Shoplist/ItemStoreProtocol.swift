@@ -13,7 +13,7 @@ protocol ItemStoreProtocol : class {
     var categories : [String]  { get }
     func add(item: Item)
     func remove(item: Item)
-    func unique<C : SequenceType, T : Hashable where C.Generator.Element == T>(inputArray: C) -> [T]
+    func unique<C : Sequence, T : Hashable>(inputArray: C) -> [T] where C.Iterator.Element == T
     var categoryToItemDictionary : [String: [Item]] { get }
     var groupedItemsAsList : [[Item]] { get }
     var itemsInList : [Item] { get }
@@ -23,10 +23,7 @@ protocol ItemStoreProtocol : class {
 extension ItemStoreProtocol {
     
     func add(item: Item) {
-        if !self.items.contains({($0.name == item.name) && ($0.category == item.category)}) {
-            self.items.append(item)
-        }
-    }
+        self.items.append(item)
     
     func remove(item: Item) {
         self.items = self.items.filter {!(($0.name == item.name) && ($0.category == item.category))}
@@ -36,13 +33,13 @@ extension ItemStoreProtocol {
         return self.items.map {$0.category}
     }
     
-    func unique<C : SequenceType, T : Hashable where C.Generator.Element == T>(inputArray: C) -> [T] {
+    func unique<C : Sequence, T : Hashable>(inputArray: C) -> [T] where C.Iterator.Element == T {
         var addedDict = [T:Bool]()
         return inputArray.filter { addedDict.updateValue(true, forKey: $0) == nil }
     }
     
     var categoryToItemDictionary : [String: [Item]] {
-        let uniqueCategoriesArr = self.unique(self.categories)
+        let uniqueCategoriesArr = self.unique(inputArray: self.categories)
         var dict = [String: [Item]]()
         for category in uniqueCategoriesArr {
             dict[category] = self.items.filter { $0.category == category }
@@ -59,7 +56,7 @@ extension ItemStoreProtocol {
         return self.items.filter{$0.isInList}
     }
     
-    func editDetails(itemToEdit: Item) {
+    func editDetails(item itemToEdit: Item) {
         for item in self.items {
             if (item.name == itemToEdit.name) && (item.category == itemToEdit.category) {
                 item.detailsText = itemToEdit.detailsText
@@ -67,4 +64,5 @@ extension ItemStoreProtocol {
             }
         }
     }
+}
 }

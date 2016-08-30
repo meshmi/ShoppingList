@@ -33,15 +33,14 @@ class AddItemTableViewController: UITableViewController {
     //MARK: Controller Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.setupAppearance()
-    }
+            }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.setup()
     }
     
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.rememberedEditedDetailsText = self.detailsTextField.text
     }
@@ -61,22 +60,20 @@ class AddItemTableViewController: UITableViewController {
                     item!.numOfPurchaces = 0
                     item!.detailsText = detailsTextField.text
                     item!.image = self.imageView.image
-                    library.editDetails(item!)
-                    library.add(item!)
-                    library.saveObjects()
+                    library.saveObjects();
                 }
             }
         }
         self.nameTextField.text = nil
         self.detailsTextField.text = nil
-        self.dismissViewControllerAnimated(true, completion: nil)
+        self.dismiss(animated: true, completion: nil)
     }
     
     
     @IBAction func Cancel(sender: UIBarButtonItem) {
         self.rememberedEditedDetailsText = nil
         self.rememberedEditedImage = nil
-        dismissViewControllerAnimated(true, completion: nil)
+        dismiss(animated: true, completion: nil)
     }
     
     // MARK: - TableView DataSource Methods
@@ -87,11 +84,11 @@ class AddItemTableViewController: UITableViewController {
         static let rowsInSectionThree = 1
     }
     
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return TableViewConstants.numberOfSections
     }
     
-    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if section == 1 {
             return "Category"
         } else if section == 2 {
@@ -100,104 +97,67 @@ class AddItemTableViewController: UITableViewController {
         return nil
     }
     
-    override func tableView(tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+    func tableView(tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         view.tintColor = Defaults.UI.blueTransperent
         let headerView: UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
-        headerView.textLabel?.textColor = UIColor.whiteColor()
+        headerView.textLabel?.textColor = UIColor.white
     }
     
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let rowsBySection = [TableViewConstants.rowsInSectionOne, TableViewConstants.rowsInSectionTwo, TableViewConstants.rowsInSectionThree]
         return rowsBySection[section]
     }
     
     //MARK: - TableView Delegate Methods
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         if (indexPath.section == 1) {
             self.category = Defaults.allCategories[indexPath.row]
-            tableView.cellForRowAtIndexPath(indexPath)?.accessoryType = UITableViewCellAccessoryType.Checkmark
+            tableView.cellForRow(at: indexPath as IndexPath)?.accessoryType = UITableViewCellAccessoryType.checkmark
         }
     }
     
-    override func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
         if (indexPath.section == 1) {
             self.category = Defaults.allCategories[indexPath.row]
-            tableView.cellForRowAtIndexPath(indexPath)?.accessoryType = UITableViewCellAccessoryType.None
+            tableView.cellForRow(at: indexPath as IndexPath)?.accessoryType = UITableViewCellAccessoryType.none
         }
     }
     
-    override func tableView(tableView: UITableView, willSelectRowAtIndexPath indexPath: NSIndexPath) -> NSIndexPath? {
+    func tableView(tableView: UITableView, willSelectRowAtIndexPath indexPath: NSIndexPath) -> NSIndexPath? {
         if indexPath.section == 1 && (item != nil) {
             return nil
         }
         return indexPath
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == PhotoViewController.id {
-            if let photoVC = segue.destinationViewController as? PhotoViewController {
+    func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+            if let photoVC = segue.destination as? PhotoViewController {
                 if let safeImage = self.imageView.image {
                     photoVC.image = safeImage
                 }
             }
         }
     }
-}
 
 //MARK: TextFieldDelegate Methods
 extension AddItemTableViewController : UITextFieldDelegate {
-    func textFieldDidBeginEditing(textField: UITextField) {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
         self.navigationItem.rightBarButtonItem?.title = "Save"
     }
     
-    func textFieldDidEndEditing(textField: UITextField) {
+    func textFieldDidEndEditing(_ textField: UITextField) {
         if nameTextField.text == nil || nameTextField.text == "" {
             self.navigationItem.rightBarButtonItem?.title = "Done"
         }
     }
     
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
     }
 }
 
-extension AddItemTableViewController : Setup {
-    func setup() {
-        self.tableView?.backgroundView = UIImageView(image: UIImage(imageLiteral: Defaults.UI.textureImage))
-        for item in self.navigationItem.leftBarButtonItems! {
-            item.tintColor = Defaults.UI.blueSolid
-        }
-        for item in self.navigationItem.rightBarButtonItems! {
-            item.tintColor = Defaults.UI.blueSolid
-        }
-        
-        if item != nil {
-            self.nameTextField.enabled = false
-            self.nameTextField.text = item?.name
-            if self.rememberedEditedDetailsText != nil {
-                self.detailsTextField.text = self.rememberedEditedDetailsText
-            } else {
-                self.detailsTextField.text = item?.detailsText
-            }
-            
-            self.category = item?.category
-            if self.rememberedEditedImage != nil {
-                self.imageView?.image = self.rememberedEditedImage
-            } else {
-                self.imageView?.image = item?.image
-            }
-            
-        } else {
-            self.nameTextField.enabled = true
-        }
-        self.tableView.reloadData()
-    }
-    
-    func setupAppearance() {
-        self.navigationItem.rightBarButtonItem?.title = "Done"
-        self.addImageButton?.layer.cornerRadius = 3.0
-    }
-    
+extension AddItemTableViewController
+{ func setup() {
 }
-
+}

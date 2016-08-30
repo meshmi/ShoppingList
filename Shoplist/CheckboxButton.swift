@@ -14,29 +14,27 @@ import UIKit
 class CheckboxButton: UIButton {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        self.setup()
     }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.setup()
     }
     
     private var circleLayer = CAShapeLayer()
     private var fillCircleLayer = CAShapeLayer()
-    override var selected: Bool {
+    override var isSelected: Bool {
         didSet {
             self.toggleCheckbox()
         }
     }
     
-    var circleLayerColor = UIColor.lightGrayColor().CGColor {
+    var circleLayerColor = UIColor.lightGray.cgColor {
         didSet {
             circleLayer.strokeColor = circleLayerColor
         }
     }
     
-    var circleFillColor = Defaults.UI.blueSolid.CGColor {
+    var circleFillColor = Defaults.UI.blueSolid.cgColor {
         didSet {
             fillCircleLayer.fillColor = circleFillColor
         }
@@ -61,19 +59,17 @@ class CheckboxButton: UIButton {
     }
     
     func toggleCheckbox() {
-        if self.selected {
+        if self.isSelected {
             fillCircleLayer.fillColor = circleFillColor
             circleLayer.strokeColor = circleFillColor
         } else {
-            fillCircleLayer.fillColor = UIColor.clearColor().CGColor
+            fillCircleLayer.fillColor = UIColor.clear.cgColor
             circleLayer.strokeColor = circleLayerColor
-        }
-    }
-    
+            
     func setup() {
         circleLayer.frame = bounds
         circleLayer.lineWidth = 1.0
-        circleLayer.fillColor = UIColor.clearColor().CGColor
+        circleLayer.fillColor = UIColor.clear.cgColor
         circleLayer.strokeColor = circleLayerColor
         layer.addSublayer(circleLayer)
         
@@ -85,28 +81,16 @@ class CheckboxButton: UIButton {
         toggleCheckbox()
     }
     
-    private var circlePath : CGPath {
-        get {
-            return UIBezierPath(ovalInRect: circleFrame()).CGPath
-        }
-    }
-    
-    private var fillCirclePath : CGPath {
-        get {
-            return UIBezierPath(ovalInRect: CGRectInset(circleFrame(), 2.0, 2.0)).CGPath
-        }
-    }
-    
-    override func layoutSubviews() {
+    func layoutSubviews() {
         super.layoutSubviews()
         circleLayer.frame = bounds
-        circleLayer.path = circlePath
         fillCircleLayer.frame = bounds
-        fillCircleLayer.path = fillCirclePath
-    }
+        }
     
-    override func prepareForInterfaceBuilder() {
-        setup()
     }
 }
+
+}
+
+
 

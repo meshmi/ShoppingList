@@ -9,6 +9,9 @@
 import UIKit
 
 class Item : NSObject, NSCoding {
+    public func encode(with aCoder: NSCoder) {
+}
+
     let name: String
     let category : String
     var isInList : Bool
@@ -45,30 +48,30 @@ class Item : NSObject, NSCoding {
     }
     
     // MARK: Archiving Paths
-    static let DocumentsDirectory = NSFileManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
-    static let ArchiveURL = DocumentsDirectory.URLByAppendingPathComponent("items")
+    static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
+    static let ArchiveURL = DocumentsDirectory.appendingPathComponent("items")
     
     // MARK: NSCoding
     func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(name, forKey: PropertyKey.name)
-        aCoder.encodeObject(category, forKey: PropertyKey.category)
-        aCoder.encodeObject(isInList, forKey: PropertyKey.isInList)
-        aCoder.encodeObject(isCompleted, forKey: PropertyKey.isCompleted)
-        aCoder.encodeObject(detailsText, forKey: PropertyKey.detailsText)
-        aCoder.encodeObject(image, forKey: PropertyKey.image)
-        aCoder.encodeObject(lastTimeAddedToList, forKey: PropertyKey.lastTimeAddedToList)
-        aCoder.encodeObject(numOfPurchaces, forKey: PropertyKey.numOfPurchaces)
+        aCoder.encode(name, forKey: PropertyKey.name)
+        aCoder.encode(category, forKey: PropertyKey.category)
+        aCoder.encode(isInList, forKey: PropertyKey.isInList)
+        aCoder.encode(isCompleted, forKey: PropertyKey.isCompleted)
+        aCoder.encode(detailsText, forKey: PropertyKey.detailsText)
+        aCoder.encode(image, forKey: PropertyKey.image)
+        aCoder.encode(lastTimeAddedToList, forKey: PropertyKey.lastTimeAddedToList)
+        aCoder.encode(numOfPurchaces, forKey: PropertyKey.numOfPurchaces)
     }
     
     required convenience init?(coder aDecoder: NSCoder) {
-        let name = aDecoder.decodeObjectForKey(PropertyKey.name) as! String
-        let category = aDecoder.decodeObjectForKey(PropertyKey.category) as! String
-        let isInList = aDecoder.decodeObjectForKey(PropertyKey.isInList) as! Bool
-        let isCompleted = aDecoder.decodeObjectForKey(PropertyKey.isCompleted) as! Bool
-        let detailsText = aDecoder.decodeObjectForKey(PropertyKey.detailsText) as? String
-        let image = aDecoder.decodeObjectForKey(PropertyKey.image) as? UIImage
-        let lastTimeAddedToList = aDecoder.decodeObjectForKey(PropertyKey.lastTimeAddedToList) as? NSDate
-        let numOfPurchaces = aDecoder.decodeObjectForKey(PropertyKey.numOfPurchaces) as! Int
+        let name = aDecoder.decodeObject(forKey: PropertyKey.name) as! String
+        let category = aDecoder.decodeObject(forKey: PropertyKey.category) as! String
+        let isInList = aDecoder.decodeObject(forKey: PropertyKey.isInList) as! Bool
+        let isCompleted = aDecoder.decodeObject(forKey: PropertyKey.isCompleted) as! Bool
+        let detailsText = aDecoder.decodeObject(forKey: PropertyKey.detailsText) as? String
+        let image = aDecoder.decodeObject(forKey: PropertyKey.image) as? UIImage
+        let lastTimeAddedToList = aDecoder.decodeObject(forKey: PropertyKey.lastTimeAddedToList) as? NSDate
+        let numOfPurchaces = aDecoder.decodeObject(forKey: PropertyKey.numOfPurchaces) as! Int
         
         self.init(name: name, category: category, isInList: isInList, completed: isCompleted, details: detailsText, image: image, addTime: lastTimeAddedToList, numOfPurchaces: numOfPurchaces)
     }

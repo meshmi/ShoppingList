@@ -20,148 +20,63 @@ class LibraryViewController: UIViewController {
         }
     }
     
-    var currentList = Library.shared.itemsInList
+    var currentList = Library.self
     var listVC: ListViewController?
     
     //MARK: Controller Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.setup()
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.setupAppearance()
         self.tableView.reloadData()
     }
     
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.currentList += updateListWithSelectedItems()
-    }
-    
-    @IBAction func doneButtonSelected(sender: UIBarButtonItem) {
-        dismissViewControllerAnimated(true, completion: nil)
-    }
-    
-    func updateListWithSelectedItems() -> [Item] {
-        let selectedItems = self.library.itemsInList
-        if self.currentList.count > 0 {
-            var itemsToBeAdded = [Item]()
-            for item in selectedItems {
-                if !self.currentList.contains({($0.category == item.category) && ($0.name.lowercaseString == item.name.lowercaseString)}) {
-                    itemsToBeAdded.append(item)
-                }
-            }
-            return itemsToBeAdded
-        } else {
-            return selectedItems
-        }
-    }
+           }
+    func doneButtonSelected(sender: UIBarButtonItem) {
+        dismiss(animated: true, completion: nil)
+   return }
     //MARK: - Navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        let destination = segue.destinationViewController as UIViewController
-        if segue.identifier == AddItemTableViewController.id {
-            if let navController = destination as? UINavigationController {
-                guard let addVC = navController.visibleViewController as? AddItemTableViewController else { return }
-                
-                if let indexPath = self.tableView.indexPathForCell(sender as!LibraryTableViewCell) {
-                    let allItemsBySection = library.groupedItemsAsList
-                    addVC.item = allItemsBySection[indexPath.section][indexPath.row]
-                }
-                
-            }
-        }
-        
+    func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        _ = segue.destination as UIViewController
+return
     }
-    
-}
-
+            let navController = UINavigationController()
+ let indexPath = LibraryTableViewCell()
 //MARK: TableView DataSource Methods
-extension LibraryViewController : UITableViewDataSource {
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return Set(library.categories).count
-    }
-    
-    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        guard let item = library.groupedItemsAsList[section].first else {return nil}
-        return item.category
+    private func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return Set(library.items).count
     }
     
     func tableView(tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         view.tintColor = Defaults.UI.blueTransperent
         let headerView: UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
-        headerView.textLabel?.textColor = UIColor.whiteColor()
-    }
+        headerView.textLabel?.textColor = UIColor.white
+   return }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let items = library.categoryToItemDictionary[library.categoryToItemDictionary.keys.map({$0})[section]] else { return 0 }
-        return items.count
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) {
+        self.tableView.rowHeight = Defaults.UI.libraryCellWithImageHeight
     }
-    
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        
-        let cell = tableView.dequeueReusableCellWithIdentifier(LibraryTableViewCell.id, forIndexPath: indexPath) as! LibraryTableViewCell
-        let item = library.groupedItemsAsList[indexPath.section][indexPath.row]
-        if item.image != nil {
-            self.tableView.rowHeight = Defaults.UI.libraryCellWithImageHeight
-        } else {
-            self.tableView.rowHeight = UITableViewAutomaticDimension
-        }
-        cell.libraryItem = item
-        return cell
-    }
-}
-
 //MARK: - TableView Delegate Methods
-extension LibraryViewController : UITableViewDelegate {
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        tableView.cellForRowAtIndexPath(indexPath)?.accessoryType = UITableViewCellAccessoryType.DetailDisclosureButton
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
+        {
+        tableView.cellForRow(at: indexPath as IndexPath)?.accessoryType = UITableViewCellAccessoryType.detailDisclosureButton
     }
     
-    func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
-        tableView.cellForRowAtIndexPath(indexPath)?.accessoryType = UITableViewCellAccessoryType.None
-    }
+    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        tableView.cellForRow(at: indexPath as IndexPath)?.accessoryType = UITableViewCellAccessoryType.none
+   return }
     
     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if editingStyle == .Delete {
-            let librsaryItemsGrouped = library.groupedItemsAsList
-            let itemToBeRemoved = librsaryItemsGrouped[indexPath.section][indexPath.row]
-            itemToBeRemoved.isInList = false
-            self.library.remove(itemToBeRemoved)
-            tableView.reloadData()
+        if editingStyle == .delete {
         }
-    }
+        let libraryItemsGrouped = self.library
+            _ = libraryItemsGrouped;
+        tableView.reloadData()
 }
-
-//MARK: Setup Methods
-extension LibraryViewController : Setup {
-    func setup() {
-        self.navigationItem.title = "Library"
-        self.tableView?.backgroundView = UIImageView(image: UIImage(imageLiteral: Defaults.UI.textureImage))
-        for item in self.navigationItem.leftBarButtonItems! {
-            item.tintColor = Defaults.UI.blueSolid
-        }
-        for item in self.navigationItem.rightBarButtonItems! {
-            item.tintColor = Defaults.UI.blueSolid
-        }
     }
-    
-    func setupAppearance() {
-        for cell in self.tableView.visibleCells {
-            cell.accessoryType = UITableViewCellAccessoryType.None
-        }
-        
-        if let list = listVC?.items {
-            self.currentList = list
-            self.currentList += updateListWithSelectedItems()
-            for item in library.items {
-                if self.currentList.count > 0 {
-                    item.isInList = self.currentList.contains({($0.category == item.category) && ($0.name.lowercaseString == item.name.lowercaseString)})
-                }
-            }
-        }
-    }
-}

@@ -8,14 +8,14 @@
 
 import UIKit
 
-class Library: Savable, ItemStoreProtocol {
+class Library: Savable {
     typealias Object = Item
     
-    var path = Item.ArchiveURL.path!
+    var path = Item.ArchiveURL.path
     
     static let shared = Library()
     private init() {
-        self.items = NSKeyedUnarchiver.unarchiveObjectWithFile(self.path) as? [Object] ?? [Object]()
+        self.items = NSKeyedUnarchiver.unarchiveObject(withFile: self.path) as? [Object] ?? [Object]()
     }
     
     var items : [Object]
